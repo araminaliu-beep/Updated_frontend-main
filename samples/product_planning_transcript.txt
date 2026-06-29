@@ -1,0 +1,10 @@
+Sarah: We need to settle product planning for the onboarding refresh and the customer demo.
+Alex: The user analytics show a big drop-off on the first onboarding screen.
+Sarah: Let's redesign the onboarding screen. That is a decision.
+Priya: Are we choosing PostgreSQL or MongoDB for the event store?
+Alex: We do not have enough information yet, so that remains open.
+Sarah: We should still proceed with the customer demo.
+Alex: I can prepare the demo slides by Thursday.
+Sarah: I will review vendor pricing by Monday.
+Priya: Is the July launch still feasible?
+Alex: I will analyze user behavior by Friday and report back.
