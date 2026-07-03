@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 from collections.abc import Iterable
@@ -16,6 +17,10 @@ from google.genai import types as genai_types
 from app.schemas import ActionItem, MeetingActionOutput
 
 load_dotenv()
+logger = logging.getLogger(__name__)
+
+GOOGLE_CHUNK_TARGET_CHARS = 30_000
+GOOGLE_CHUNK_OVERLAP_CHARS = 1_500
 
 
 @dataclass(frozen=True)
@@ -113,6 +118,20 @@ def analyze_meeting_with_metadata(raw_text: str) -> AnalysisResult:
         try:
             return AnalysisResult(output=_analyze_with_google(transcript), engine=_google_engine_name())
         except Exception as exc:
+            logger.warning("Gemini meeting analysis failed; trying chunked analysis.", exc_info=exc)
+            if len(transcript) > GOOGLE_CHUNK_TARGET_CHARS:
+                try:
+                    return AnalysisResult(
+                        output=_analyze_with_google_chunks(transcript),
+                        engine=_google_engine_name(),
+                    )
+                except Exception as chunk_exc:
+                    logger.warning(
+                        "Chunked Gemini meeting analysis failed; using local fallback.",
+                        exc_info=chunk_exc,
+                    )
+            else:
+                logger.warning("Using local fallback after Gemini analysis failure.", exc_info=exc)
             return AnalysisResult(
                 output=_heuristic_analysis(transcript),
                 engine="local_fallback",
@@ -180,6 +199,65 @@ Transcript:
     )
     payload: dict[str, Any] = json.loads(response.text or "{}")
     return MeetingActionOutput.model_validate(payload)
+
+
+def _analyze_with_google_chunks(transcript: str) -> MeetingActionOutput:
+    outputs = [_analyze_with_google(chunk) for chunk in _chunk_transcript(transcript)]
+    if not outputs:
+        raise ValueError("No transcript chunks were available for Gemini analysis.")
+
+    decisions = _dedupe_strings(
+        decision for output in outputs for decision in output.decisions
+    )
+    action_items = _dedupe_actions(
+        _ActionCandidate(item=item, priority=1)
+        for output in outputs
+        for item in output.action_items
+    )
+    questions = _dedupe_strings(
+        question for output in outputs for question in output.open_questions
+    )
+    risks = _dedupe_strings(risk for output in outputs for risk in output.risks)
+    decisions, action_items, questions, risks = _verify_output(
+        decisions, action_items, questions, risks
+    )
+    meeting_type = next(
+        (output.meeting_type for output in outputs if output.meeting_type != "Unknown"),
+        _guess_meeting_type(transcript),
+    )
+    return MeetingActionOutput(
+        meeting_type=meeting_type,
+        decisions=decisions,
+        action_items=action_items,
+        open_questions=questions,
+        risks=risks,
+        follow_up_email=_build_follow_up_email(decisions, action_items, questions, risks),
+    )
+
+
+def _chunk_transcript(transcript: str) -> list[str]:
+    lines = transcript.splitlines()
+    chunks: list[str] = []
+    current: list[str] = []
+    current_length = 0
+
+    for line in lines:
+        line_length = len(line) + 1
+        if current and current_length + line_length > GOOGLE_CHUNK_TARGET_CHARS:
+            chunk = "\n".join(current).strip()
+            if chunk:
+                chunks.append(chunk)
+            overlap = chunk[-GOOGLE_CHUNK_OVERLAP_CHARS:]
+            current = [overlap, line] if overlap else [line]
+            current_length = sum(len(item) + 1 for item in current)
+            continue
+        current.append(line)
+        current_length += line_length
+
+    chunk = "\n".join(current).strip()
+    if chunk:
+        chunks.append(chunk)
+    return chunks
 
 
 def _heuristic_analysis(transcript: str) -> MeetingActionOutput:

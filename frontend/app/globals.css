@@ -132,6 +132,18 @@ button {
   min-height: calc(100vh - 114px);
 }
 
+.view-page {
+  margin-top: 14px;
+  min-height: calc(100vh - 114px);
+}
+
+.view-page-two {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.72fr) minmax(520px, 1fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
 .project-panel,
 .execution-board,
 .ai-sidebar,
@@ -292,6 +304,16 @@ button {
   margin-top: 16px;
   padding-top: 14px;
   border-top: 1px solid var(--line);
+}
+
+.intake-focus .meeting-intake {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.intake-focus .meeting-intake textarea {
+  min-height: 430px;
 }
 
 .section-title {
@@ -614,6 +636,26 @@ button {
   margin-top: 10px;
 }
 
+.front-summary-panel {
+  margin-top: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #ffffff;
+}
+
+.front-summary-panel pre {
+  max-height: 240px;
+  margin: 12px 0 0;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
 .decisions-panel,
 .risks-panel,
 .summary-panel {
@@ -653,8 +695,98 @@ button {
   overflow: auto;
 }
 
+.meeting-summary {
+  margin-top: 12px;
+  box-shadow: none;
+}
+
+.meeting-summary pre {
+  max-height: 340px;
+}
+
+.transcript-preview {
+  min-height: 430px;
+  max-height: 58vh;
+  margin-top: 16px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  color: var(--muted);
+  background: var(--panel-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.data-table {
+  display: grid;
+  margin-top: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.data-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.6fr) minmax(120px, 0.65fr) minmax(120px, 0.65fr) minmax(100px, 0.5fr);
+  gap: 12px;
+  align-items: center;
+  min-height: 52px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.data-row:first-child {
+  border-top: 0;
+}
+
+.data-row span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.data-row-head {
+  min-height: 42px;
+  color: var(--ink);
+  background: var(--panel-muted);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.empty-state {
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.decision-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
 .ai-sidebar {
   min-width: 0;
+}
+
+.ai-sidebar-wide {
+  padding: 18px;
+}
+
+.ai-sidebar-wide .answer-box {
+  min-height: 430px;
 }
 
 .copilot-header {
@@ -756,6 +888,11 @@ button {
     grid-template-columns: 260px minmax(0, 1fr);
   }
 
+  .view-page-two,
+  .decision-grid {
+    grid-template-columns: 1fr;
+  }
+
   .ai-sidebar {
     grid-column: 1 / -1;
   }
@@ -784,9 +921,16 @@ button {
   }
 
   .workspace,
+  .view-page-two,
   .kanban-grid,
   .insight-strip,
-  .lower-grid {
+  .lower-grid,
+  .decision-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .data-row,
+  .data-row-head {
     grid-template-columns: 1fr;
   }
 

@@ -1,0 +1,543 @@
+{
+  "eval_case_results": [
+    {
+      "eval_case_index": 0,
+      "response_candidate_results": [
+        {
+          "response_index": 0,
+          "metric_results": {
+            "custom_response_quality": {
+              "metric_name": "custom_response_quality",
+              "score": 5.0,
+              "explanation": "The agent's response accurately and comprehensively answers the user's general query about its capabilities. It clearly outlines its primary functions in a well-structured, easy-to-understand list, followed by a concise summary statement. The functions listed in the response directly correspond to the roles of the various specialized agents and the overall objective of the 'Manager Agent' as described in the agent trace. This indicates a complete understanding of its own purpose and an excellent articulation of its value proposition.",
+              "rubric_verdicts": null,
+              "raw_output": null,
+              "error_message": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "eval_case_index": 1,
+      "response_candidate_results": [
+        {
+          "response_index": 0,
+          "metric_results": {
+            "custom_response_quality": {
+              "metric_name": "custom_response_quality",
+              "score": 5.0,
+              "explanation": "The user asked an out-of-scope question about the weather. The agent correctly identified that it cannot answer such questions, stating its limitations and its designed purpose (meeting summaries and action items). This is an excellent way to handle queries that fall outside of its capabilities, providing clear and accurate information about its functionality.",
+              "rubric_verdicts": null,
+              "raw_output": null,
+              "error_message": null
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "summary_metrics": [
+    {
+      "metric_name": "custom_response_quality",
+      "num_cases_total": 2,
+      "num_cases_valid": 2,
+      "num_cases_error": 0,
+      "mean_score": 5.0,
+      "stdev_score": 0.0,
+      "pass_rate": null
+    }
+  ],
+  "win_rates": null,
+  "evaluation_dataset": [
+    {
+      "bigquery_source": null,
+      "gcs_source": null,
+      "eval_cases": [
+        {
+          "prompt": {
+            "parts": [
+              {
+                "media_resolution": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "file_data": null,
+                "function_call": null,
+                "function_response": null,
+                "inline_data": null,
+                "text": "Hello, what can you help me with?",
+                "thought": null,
+                "thought_signature": null,
+                "video_metadata": null,
+                "tool_call": null,
+                "tool_response": null,
+                "part_metadata": null
+              }
+            ],
+            "role": "user"
+          },
+          "responses": [
+            {
+              "response": {
+                "parts": [
+                  {
+                    "media_resolution": null,
+                    "code_execution_result": null,
+                    "executable_code": null,
+                    "file_data": null,
+                    "function_call": null,
+                    "function_response": null,
+                    "inline_data": null,
+                    "text": "I am an AI Meeting-to-Action Agent. I help to:\n1. Identify the meeting type.\n2. Extract decisions, action items, owners, deadlines, open questions, and risks from meeting transcripts.\n3. Synthesize these extractions into a structured summary.\n4. Generate a follow-up email.\n5. Create a project tracker with the extracted action items.\n\nEssentially, I convert your meeting transcripts into actionable insights and organized outputs.",
+                    "thought": null,
+                    "thought_signature": null,
+                    "video_metadata": null,
+                    "tool_call": null,
+                    "tool_response": null,
+                    "part_metadata": null
+                  }
+                ],
+                "role": "model"
+              }
+            }
+          ],
+          "reference": null,
+          "system_instruction": null,
+          "conversation_history": null,
+          "rubric_groups": null,
+          "eval_case_id": "greeting",
+          "intermediate_events": null,
+          "agent_info": null,
+          "agent_data": {
+            "agents": {
+              "manager_agent": {
+                "agent_id": "manager_agent",
+                "agent_type": "LlmAgent",
+                "description": "Coordinates specialist agents to convert meeting transcripts into action artifacts.",
+                "instruction": "\nYou are the Manager Agent for an AI Meeting-to-Action Agent.\n\nArchitecture:\nTranscript\n-> clean transcript + topic segmentation\n-> parallel Decision, Action, Deadline, and Risk Agents\n-> Verification Agent\n-> deduplication and merge\n-> structured JSON output\n-> Jira / Linear / Notion export-ready tracker rows\n-> interactive meeting dashboard.\n\nYour job:\n1. Identify the meeting type.\n2. Delegate extraction work to the specialist agents when helpful.\n3. Synthesize the specialist outputs into this final format:\n\nMeeting Summary\n\nMeeting Type:\n<type>\n\nDecisions:\n\u2713 <decision>\n\nAction Items:\n1. <owner> \u2014 <task> \u2014 Due <deadline>.\n\nOpen Questions:\n\u2022 <question>\n\nRisks:\n\u2022 <risk>\n\nFollow-up Email:\n<generated email>\n\nProject Tracker:\n[Download CSV]\n\nUse the save_tracker_csv_from_json tool when tracker rows are ready. Include the\nreturned file path in the final answer after \"[Download CSV]\".\n\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\n",
+                "tools": [
+                  {
+                    "retrieval": null,
+                    "computer_use": null,
+                    "file_search": null,
+                    "google_search": null,
+                    "google_maps": null,
+                    "code_execution": null,
+                    "enterprise_web_search": null,
+                    "function_declarations": [
+                      {
+                        "description": "Save tracker rows JSON to a local CSV file.\n\nArgs:\n    tracker_rows_json: JSON string containing either a list of tracker rows or\n        an object with a \"tracker_rows\" or \"action_items\" list.\n\nReturns:\n    A dictionary with status, file_path, and row_count.",
+                        "name": "save_tracker_csv_from_json",
+                        "parameters": null,
+                        "parameters_json_schema": {
+                          "properties": {
+                            "tracker_rows_json": {
+                              "title": "Tracker Rows Json",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "tracker_rows_json"
+                          ],
+                          "title": "save_tracker_csv_from_jsonParams",
+                          "type": "object"
+                        },
+                        "response": null,
+                        "response_json_schema": {
+                          "additionalProperties": true,
+                          "type": "object"
+                        },
+                        "behavior": null
+                      }
+                    ],
+                    "google_search_retrieval": null,
+                    "parallel_ai_search": null,
+                    "url_context": null,
+                    "mcp_servers": null
+                  }
+                ],
+                "sub_agents": [
+                  "decision_agent",
+                  "action_item_agent",
+                  "owner_agent",
+                  "deadline_agent",
+                  "question_agent",
+                  "risk_agent",
+                  "verification_agent",
+                  "email_agent",
+                  "tracker_agent"
+                ]
+              },
+              "decision_agent": {
+                "agent_id": "decision_agent",
+                "agent_type": "LlmAgent",
+                "description": "Extracts explicit decisions made during the meeting.",
+                "instruction": "\nYou are the Decision Agent.\nRead the meeting transcript and return only decisions that were clearly made.\nDo not include proposals, open questions, or action items as decisions.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nReturn a compact JSON object with a \"decisions\" array of strings.\n",
+                "tools": [],
+                "sub_agents": []
+              },
+              "action_item_agent": {
+                "agent_id": "action_item_agent",
+                "agent_type": "LlmAgent",
+                "description": "Extracts concrete action items and task descriptions.",
+                "instruction": "\nYou are the Action Item Agent.\nExtract concrete follow-up work from the transcript.\nOnly extract actions that have an explicit responsible person or team and a\nconcrete task. Do not infer missing owners.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nReturn a compact JSON object with an \"action_items\" array. Each item should\ninclude \"owner\", \"task\", \"deadline\", \"status\", and \"evidence\" fields.\n",
+                "tools": [],
+                "sub_agents": []
+              },
+              "owner_agent": {
+                "agent_id": "owner_agent",
+                "agent_type": "LlmAgent",
+                "description": "Assigns explicit owners to extracted action items.",
+                "instruction": "\nYou are the Owner Agent.\nFor each action item, identify the explicitly stated owner from the transcript.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nUse \"Unassigned\" when the owner is unclear or implied but not explicit.\nReturn a compact JSON object with an \"owners\" array.\n",
+                "tools": [],
+                "sub_agents": []
+              },
+              "deadline_agent": {
+                "agent_id": "deadline_agent",
+                "agent_type": "LlmAgent",
+                "description": "Assigns explicit due dates or deadlines to action items.",
+                "instruction": "\nYou are the Deadline Agent.\nFor each action item, identify the explicitly stated deadline.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nUse \"Unknown\" when no clear deadline is present.\nReturn a compact JSON object with a \"deadlines\" array.\n",
+                "tools": [],
+                "sub_agents": []
+              },
+              "question_agent": {
+                "agent_id": "question_agent",
+                "agent_type": "LlmAgent",
+                "description": "Extracts unresolved questions from the meeting.",
+                "instruction": "\nYou are the Question Agent.\nExtract only questions that remain unresolved at the end of the meeting.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nReturn a compact JSON object with an \"open_questions\" array of strings.\n",
+                "tools": [],
+                "sub_agents": []
+              },
+              "risk_agent": {
+                "agent_id": "risk_agent",
+                "agent_type": "LlmAgent",
+                "description": "Extracts blockers, pending items, dependencies, and schedule risks.",
+                "instruction": "\nYou are the Risk Agent.\nExtract blockers, pending work, unresolved dependencies, bugs that may affect\ndelivery, and schedule uncertainty.\nDo not include normal action items unless they represent a risk or blocker.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nReturn a compact JSON object with a \"risks\" array of strings.\n",
+                "tools": [],
+                "sub_agents": []
+              },
+              "verification_agent": {
+                "agent_id": "verification_agent",
+                "agent_type": "LlmAgent",
+                "description": "Verifies extracted meeting artifacts against strict rules.",
+                "instruction": "\nYou are the Verification Agent.\nReview extracted decisions, actions, deadlines, questions, and risks.\nRemove decisions that are only suggestions or preferences.\nRemove actions missing an explicit owner or concrete task.\nKeep only explicit deadlines; do not infer or convert dates.\nDeduplicate overlapping outputs and preserve uncertainty.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nReturn compact JSON with verified \"decisions\", \"action_items\",\n\"open_questions\", and \"risks\".\n",
+                "tools": [],
+                "sub_agents": []
+              },
+              "email_agent": {
+                "agent_id": "email_agent",
+                "agent_type": "LlmAgent",
+                "description": "Drafts the follow-up email from structured meeting outputs.",
+                "instruction": "\nYou are the Email Agent.\nDraft a concise follow-up email using the extracted decisions, action items,\nowners, deadlines, unresolved questions, and risks.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nDo not claim that external systems were updated or that email was sent.\nReturn a compact JSON object with a \"follow_up_email\" string.\n",
+                "tools": [],
+                "sub_agents": []
+              },
+              "tracker_agent": {
+                "agent_id": "tracker_agent",
+                "agent_type": "LlmAgent",
+                "description": "Prepares project tracker rows from action items.",
+                "instruction": "\nYou are the Tracker Agent.\nCreate tracker rows for each action item using owner, task, deadline, and status.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nUse status \"Open\" for every new action item.\nReturn compact JSON with a \"tracker_rows\" array.\n",
+                "tools": [],
+                "sub_agents": []
+              }
+            },
+            "turns": [
+              {
+                "turn_index": 0,
+                "turn_id": "turn_0",
+                "events": [
+                  {
+                    "author": "manager_agent",
+                    "content": {
+                      "parts": [
+                        {
+                          "media_resolution": null,
+                          "code_execution_result": null,
+                          "executable_code": null,
+                          "file_data": null,
+                          "function_call": null,
+                          "function_response": null,
+                          "inline_data": null,
+                          "text": "I am an AI Meeting-to-Action Agent. I help to:\n1. Identify the meeting type.\n2. Extract decisions, action items, owners, deadlines, open questions, and risks from meeting transcripts.\n3. Synthesize these extractions into a structured summary.\n4. Generate a follow-up email.\n5. Create a project tracker with the extracted action items.\n\nEssentially, I convert your meeting transcripts into actionable insights and organized outputs.",
+                          "thought": null,
+                          "thought_signature": null,
+                          "video_metadata": null,
+                          "tool_call": null,
+                          "tool_response": null,
+                          "part_metadata": null
+                        }
+                      ],
+                      "role": "model"
+                    },
+                    "event_time": null,
+                    "state_delta": null,
+                    "active_tools": null
+                  }
+                ]
+              }
+            ]
+          },
+          "user_scenario": null
+        },
+        {
+          "prompt": {
+            "parts": [
+              {
+                "media_resolution": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "file_data": null,
+                "function_call": null,
+                "function_response": null,
+                "inline_data": null,
+                "text": "What's the weather like in San Francisco?",
+                "thought": null,
+                "thought_signature": null,
+                "video_metadata": null,
+                "tool_call": null,
+                "tool_response": null,
+                "part_metadata": null
+              }
+            ],
+            "role": "user"
+          },
+          "responses": [
+            {
+              "response": {
+                "parts": [
+                  {
+                    "media_resolution": null,
+                    "code_execution_result": null,
+                    "executable_code": null,
+                    "file_data": null,
+                    "function_call": null,
+                    "function_response": null,
+                    "inline_data": null,
+                    "text": "I cannot answer questions about the weather. I am designed to help with meeting summaries and action items.",
+                    "thought": null,
+                    "thought_signature": null,
+                    "video_metadata": null,
+                    "tool_call": null,
+                    "tool_response": null,
+                    "part_metadata": null
+                  }
+                ],
+                "role": "model"
+              }
+            }
+          ],
+          "reference": null,
+          "system_instruction": null,
+          "conversation_history": null,
+          "rubric_groups": null,
+          "eval_case_id": "weather_query",
+          "intermediate_events": null,
+          "agent_info": null,
+          "agent_data": {
+            "agents": {
+              "manager_agent": {
+                "agent_id": "manager_agent",
+                "agent_type": "LlmAgent",
+                "description": "Coordinates specialist agents to convert meeting transcripts into action artifacts.",
+                "instruction": "\nYou are the Manager Agent for an AI Meeting-to-Action Agent.\n\nArchitecture:\nTranscript\n-> clean transcript + topic segmentation\n-> parallel Decision, Action, Deadline, and Risk Agents\n-> Verification Agent\n-> deduplication and merge\n-> structured JSON output\n-> Jira / Linear / Notion export-ready tracker rows\n-> interactive meeting dashboard.\n\nYour job:\n1. Identify the meeting type.\n2. Delegate extraction work to the specialist agents when helpful.\n3. Synthesize the specialist outputs into this final format:\n\nMeeting Summary\n\nMeeting Type:\n<type>\n\nDecisions:\n\u2713 <decision>\n\nAction Items:\n1. <owner> \u2014 <task> \u2014 Due <deadline>.\n\nOpen Questions:\n\u2022 <question>\n\nRisks:\n\u2022 <risk>\n\nFollow-up Email:\n<generated email>\n\nProject Tracker:\n[Download CSV]\n\nUse the save_tracker_csv_from_json tool when tracker rows are ready. Include the\nreturned file path in the final answer after \"[Download CSV]\".\n\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\n",
+                "tools": [
+                  {
+                    "retrieval": null,
+                    "computer_use": null,
+                    "file_search": null,
+                    "google_search": null,
+                    "google_maps": null,
+                    "code_execution": null,
+                    "enterprise_web_search": null,
+                    "function_declarations": [
+                      {
+                        "description": "Save tracker rows JSON to a local CSV file.\n\nArgs:\n    tracker_rows_json: JSON string containing either a list of tracker rows or\n        an object with a \"tracker_rows\" or \"action_items\" list.\n\nReturns:\n    A dictionary with status, file_path, and row_count.",
+                        "name": "save_tracker_csv_from_json",
+                        "parameters": null,
+                        "parameters_json_schema": {
+                          "properties": {
+                            "tracker_rows_json": {
+                              "title": "Tracker Rows Json",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "tracker_rows_json"
+                          ],
+                          "title": "save_tracker_csv_from_jsonParams",
+                          "type": "object"
+                        },
+                        "response": null,
+                        "response_json_schema": {
+                          "additionalProperties": true,
+                          "type": "object"
+                        },
+                        "behavior": null
+                      }
+                    ],
+                    "google_search_retrieval": null,
+                    "parallel_ai_search": null,
+                    "url_context": null,
+                    "mcp_servers": null
+                  }
+                ],
+                "sub_agents": [
+                  "decision_agent",
+                  "action_item_agent",
+                  "owner_agent",
+                  "deadline_agent",
+                  "question_agent",
+                  "risk_agent",
+                  "verification_agent",
+                  "email_agent",
+                  "tracker_agent"
+                ]
+              },
+              "decision_agent": {
+                "agent_id": "decision_agent",
+                "agent_type": "LlmAgent",
+                "description": "Extracts explicit decisions made during the meeting.",
+                "instruction": "\nYou are the Decision Agent.\nRead the meeting transcript and return only decisions that were clearly made.\nDo not include proposals, open questions, or action items as decisions.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nReturn a compact JSON object with a \"decisions\" array of strings.\n",
+                "tools": [],
+                "sub_agents": []
+              },
+              "action_item_agent": {
+                "agent_id": "action_item_agent",
+                "agent_type": "LlmAgent",
+                "description": "Extracts concrete action items and task descriptions.",
+                "instruction": "\nYou are the Action Item Agent.\nExtract concrete follow-up work from the transcript.\nOnly extract actions that have an explicit responsible person or team and a\nconcrete task. Do not infer missing owners.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nReturn a compact JSON object with an \"action_items\" array. Each item should\ninclude \"owner\", \"task\", \"deadline\", \"status\", and \"evidence\" fields.\n",
+                "tools": [],
+                "sub_agents": []
+              },
+              "owner_agent": {
+                "agent_id": "owner_agent",
+                "agent_type": "LlmAgent",
+                "description": "Assigns explicit owners to extracted action items.",
+                "instruction": "\nYou are the Owner Agent.\nFor each action item, identify the explicitly stated owner from the transcript.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nUse \"Unassigned\" when the owner is unclear or implied but not explicit.\nReturn a compact JSON object with an \"owners\" array.\n",
+                "tools": [],
+                "sub_agents": []
+              },
+              "deadline_agent": {
+                "agent_id": "deadline_agent",
+                "agent_type": "LlmAgent",
+                "description": "Assigns explicit due dates or deadlines to action items.",
+                "instruction": "\nYou are the Deadline Agent.\nFor each action item, identify the explicitly stated deadline.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nUse \"Unknown\" when no clear deadline is present.\nReturn a compact JSON object with a \"deadlines\" array.\n",
+                "tools": [],
+                "sub_agents": []
+              },
+              "question_agent": {
+                "agent_id": "question_agent",
+                "agent_type": "LlmAgent",
+                "description": "Extracts unresolved questions from the meeting.",
+                "instruction": "\nYou are the Question Agent.\nExtract only questions that remain unresolved at the end of the meeting.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nReturn a compact JSON object with an \"open_questions\" array of strings.\n",
+                "tools": [],
+                "sub_agents": []
+              },
+              "risk_agent": {
+                "agent_id": "risk_agent",
+                "agent_type": "LlmAgent",
+                "description": "Extracts blockers, pending items, dependencies, and schedule risks.",
+                "instruction": "\nYou are the Risk Agent.\nExtract blockers, pending work, unresolved dependencies, bugs that may affect\ndelivery, and schedule uncertainty.\nDo not include normal action items unless they represent a risk or blocker.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nReturn a compact JSON object with a \"risks\" array of strings.\n",
+                "tools": [],
+                "sub_agents": []
+              },
+              "verification_agent": {
+                "agent_id": "verification_agent",
+                "agent_type": "LlmAgent",
+                "description": "Verifies extracted meeting artifacts against strict rules.",
+                "instruction": "\nYou are the Verification Agent.\nReview extracted decisions, actions, deadlines, questions, and risks.\nRemove decisions that are only suggestions or preferences.\nRemove actions missing an explicit owner or concrete task.\nKeep only explicit deadlines; do not infer or convert dates.\nDeduplicate overlapping outputs and preserve uncertainty.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nReturn compact JSON with verified \"decisions\", \"action_items\",\n\"open_questions\", and \"risks\".\n",
+                "tools": [],
+                "sub_agents": []
+              },
+              "email_agent": {
+                "agent_id": "email_agent",
+                "agent_type": "LlmAgent",
+                "description": "Drafts the follow-up email from structured meeting outputs.",
+                "instruction": "\nYou are the Email Agent.\nDraft a concise follow-up email using the extracted decisions, action items,\nowners, deadlines, unresolved questions, and risks.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nDo not claim that external systems were updated or that email was sent.\nReturn a compact JSON object with a \"follow_up_email\" string.\n",
+                "tools": [],
+                "sub_agents": []
+              },
+              "tracker_agent": {
+                "agent_id": "tracker_agent",
+                "agent_type": "LlmAgent",
+                "description": "Prepares project tracker rows from action items.",
+                "instruction": "\nYou are the Tracker Agent.\nCreate tracker rows for each action item using owner, task, deadline, and status.\n\nSafety rules:\n- Do not guess owners. If an owner is not explicit, use \"Unassigned\".\n- Do not guess deadlines. If a deadline is not explicit, use \"Unknown\".\n- Preserve uncertainty instead of inventing details.\n- Keep decisions, action items, and unresolved questions separate.\n- A decision is final only when participants explicitly approve, agree,\n  confirm, decide, resolve, or otherwise clearly finalize it.\n- Do not classify suggestions, preferences, \"I think\", \"leaning\", or open\n  discussion as decisions.\n- An action item requires an explicit responsible person or team and a\n  concrete task.\n\nUse status \"Open\" for every new action item.\nReturn compact JSON with a \"tracker_rows\" array.\n",
+                "tools": [],
+                "sub_agents": []
+              }
+            },
+            "turns": [
+              {
+                "turn_index": 0,
+                "turn_id": "turn_0",
+                "events": [
+                  {
+                    "author": "manager_agent",
+                    "content": {
+                      "parts": [
+                        {
+                          "media_resolution": null,
+                          "code_execution_result": null,
+                          "executable_code": null,
+                          "file_data": null,
+                          "function_call": null,
+                          "function_response": null,
+                          "inline_data": null,
+                          "text": "I cannot answer questions about the weather. I am designed to help with meeting summaries and action items.",
+                          "thought": null,
+                          "thought_signature": null,
+                          "video_metadata": null,
+                          "tool_call": null,
+                          "tool_response": null,
+                          "part_metadata": null
+                        }
+                      ],
+                      "role": "model"
+                    },
+                    "event_time": null,
+                    "state_delta": null,
+                    "active_tools": null
+                  }
+                ]
+              }
+            ]
+          },
+          "user_scenario": null
+        }
+      ],
+      "eval_dataset_df": null,
+      "candidate_name": null
+    }
+  ],
+  "metadata": {
+    "candidate_names": [
+      "candidate_1"
+    ],
+    "dataset_name": null,
+    "dataset_id": null,
+    "creation_timestamp": "2026-07-03T18:29:07.425901Z",
+    "dataset": [
+      {
+        "prompt_display_text": "Hello, what can you help me with?",
+        "prompt_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"Hello, what can you help me with?\"\n    }\n  ],\n  \"role\": \"user\"\n}",
+        "reference": "",
+        "reference_raw_json": "",
+        "response_display_text": "I am an AI Meeting-to-Action Agent. I help to:\n1. Identify the meeting type.\n2. Extract decisions, action items, owners, deadlines, open questions, and risks from meeting transcripts.\n3. Synthesize these extractions into a structured summary.\n4. Generate a follow-up email.\n5. Create a project tracker with the extracted action items.\n\nEssentially, I convert your meeting transcripts into actionable insights and organized outputs.",
+        "response_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"I am an AI Meeting-to-Action Agent. I help to:\\n1. Identify the meeting type.\\n2. Extract decisions, action items, owners, deadlines, open questions, and risks from meeting transcripts.\\n3. Synthesize these extractions into a structured summary.\\n4. Generate a follow-up email.\\n5. Create a project tracker with the extracted action items.\\n\\nEssentially, I convert your meeting transcripts into actionable insights and organized outputs.\"\n    }\n  ],\n  \"role\": \"model\"\n}",
+        "intermediate_events": null,
+        "agent_data": "{\"agents\": {\"manager_agent\": {\"agent_id\": \"manager_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Coordinates specialist agents to convert meeting transcripts into action artifacts.\", \"instruction\": \"\\nYou are the Manager Agent for an AI Meeting-to-Action Agent.\\n\\nArchitecture:\\nTranscript\\n-> clean transcript + topic segmentation\\n-> parallel Decision, Action, Deadline, and Risk Agents\\n-> Verification Agent\\n-> deduplication and merge\\n-> structured JSON output\\n-> Jira / Linear / Notion export-ready tracker rows\\n-> interactive meeting dashboard.\\n\\nYour job:\\n1. Identify the meeting type.\\n2. Delegate extraction work to the specialist agents when helpful.\\n3. Synthesize the specialist outputs into this final format:\\n\\nMeeting Summary\\n\\nMeeting Type:\\n<type>\\n\\nDecisions:\\n\u2713 <decision>\\n\\nAction Items:\\n1. <owner> \u2014 <task> \u2014 Due <deadline>.\\n\\nOpen Questions:\\n\u2022 <question>\\n\\nRisks:\\n\u2022 <risk>\\n\\nFollow-up Email:\\n<generated email>\\n\\nProject Tracker:\\n[Download CSV]\\n\\nUse the save_tracker_csv_from_json tool when tracker rows are ready. Include the\\nreturned file path in the final answer after \\\"[Download CSV]\\\".\\n\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\n\", \"tools\": [{\"function_declarations\": [{\"description\": \"Save tracker rows JSON to a local CSV file.\\n\\nArgs:\\n    tracker_rows_json: JSON string containing either a list of tracker rows or\\n        an object with a \\\"tracker_rows\\\" or \\\"action_items\\\" list.\\n\\nReturns:\\n    A dictionary with status, file_path, and row_count.\", \"name\": \"save_tracker_csv_from_json\", \"parameters_json_schema\": {\"properties\": {\"tracker_rows_json\": {\"title\": \"Tracker Rows Json\", \"type\": \"string\"}}, \"required\": [\"tracker_rows_json\"], \"title\": \"save_tracker_csv_from_jsonParams\", \"type\": \"object\"}, \"response_json_schema\": {\"additionalProperties\": true, \"type\": \"object\"}}]}], \"sub_agents\": [\"decision_agent\", \"action_item_agent\", \"owner_agent\", \"deadline_agent\", \"question_agent\", \"risk_agent\", \"verification_agent\", \"email_agent\", \"tracker_agent\"]}, \"decision_agent\": {\"agent_id\": \"decision_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Extracts explicit decisions made during the meeting.\", \"instruction\": \"\\nYou are the Decision Agent.\\nRead the meeting transcript and return only decisions that were clearly made.\\nDo not include proposals, open questions, or action items as decisions.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nReturn a compact JSON object with a \\\"decisions\\\" array of strings.\\n\", \"tools\": [], \"sub_agents\": []}, \"action_item_agent\": {\"agent_id\": \"action_item_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Extracts concrete action items and task descriptions.\", \"instruction\": \"\\nYou are the Action Item Agent.\\nExtract concrete follow-up work from the transcript.\\nOnly extract actions that have an explicit responsible person or team and a\\nconcrete task. Do not infer missing owners.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nReturn a compact JSON object with an \\\"action_items\\\" array. Each item should\\ninclude \\\"owner\\\", \\\"task\\\", \\\"deadline\\\", \\\"status\\\", and \\\"evidence\\\" fields.\\n\", \"tools\": [], \"sub_agents\": []}, \"owner_agent\": {\"agent_id\": \"owner_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Assigns explicit owners to extracted action items.\", \"instruction\": \"\\nYou are the Owner Agent.\\nFor each action item, identify the explicitly stated owner from the transcript.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nUse \\\"Unassigned\\\" when the owner is unclear or implied but not explicit.\\nReturn a compact JSON object with an \\\"owners\\\" array.\\n\", \"tools\": [], \"sub_agents\": []}, \"deadline_agent\": {\"agent_id\": \"deadline_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Assigns explicit due dates or deadlines to action items.\", \"instruction\": \"\\nYou are the Deadline Agent.\\nFor each action item, identify the explicitly stated deadline.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nUse \\\"Unknown\\\" when no clear deadline is present.\\nReturn a compact JSON object with a \\\"deadlines\\\" array.\\n\", \"tools\": [], \"sub_agents\": []}, \"question_agent\": {\"agent_id\": \"question_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Extracts unresolved questions from the meeting.\", \"instruction\": \"\\nYou are the Question Agent.\\nExtract only questions that remain unresolved at the end of the meeting.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nReturn a compact JSON object with an \\\"open_questions\\\" array of strings.\\n\", \"tools\": [], \"sub_agents\": []}, \"risk_agent\": {\"agent_id\": \"risk_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Extracts blockers, pending items, dependencies, and schedule risks.\", \"instruction\": \"\\nYou are the Risk Agent.\\nExtract blockers, pending work, unresolved dependencies, bugs that may affect\\ndelivery, and schedule uncertainty.\\nDo not include normal action items unless they represent a risk or blocker.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nReturn a compact JSON object with a \\\"risks\\\" array of strings.\\n\", \"tools\": [], \"sub_agents\": []}, \"verification_agent\": {\"agent_id\": \"verification_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Verifies extracted meeting artifacts against strict rules.\", \"instruction\": \"\\nYou are the Verification Agent.\\nReview extracted decisions, actions, deadlines, questions, and risks.\\nRemove decisions that are only suggestions or preferences.\\nRemove actions missing an explicit owner or concrete task.\\nKeep only explicit deadlines; do not infer or convert dates.\\nDeduplicate overlapping outputs and preserve uncertainty.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nReturn compact JSON with verified \\\"decisions\\\", \\\"action_items\\\",\\n\\\"open_questions\\\", and \\\"risks\\\".\\n\", \"tools\": [], \"sub_agents\": []}, \"email_agent\": {\"agent_id\": \"email_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Drafts the follow-up email from structured meeting outputs.\", \"instruction\": \"\\nYou are the Email Agent.\\nDraft a concise follow-up email using the extracted decisions, action items,\\nowners, deadlines, unresolved questions, and risks.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nDo not claim that external systems were updated or that email was sent.\\nReturn a compact JSON object with a \\\"follow_up_email\\\" string.\\n\", \"tools\": [], \"sub_agents\": []}, \"tracker_agent\": {\"agent_id\": \"tracker_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Prepares project tracker rows from action items.\", \"instruction\": \"\\nYou are the Tracker Agent.\\nCreate tracker rows for each action item using owner, task, deadline, and status.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nUse status \\\"Open\\\" for every new action item.\\nReturn compact JSON with a \\\"tracker_rows\\\" array.\\n\", \"tools\": [], \"sub_agents\": []}}, \"turns\": [{\"turn_index\": 0, \"turn_id\": \"turn_0\", \"events\": [{\"author\": \"manager_agent\", \"content\": {\"parts\": [{\"text\": \"I am an AI Meeting-to-Action Agent. I help to:\\n1. Identify the meeting type.\\n2. Extract decisions, action items, owners, deadlines, open questions, and risks from meeting transcripts.\\n3. Synthesize these extractions into a structured summary.\\n4. Generate a follow-up email.\\n5. Create a project tracker with the extracted action items.\\n\\nEssentially, I convert your meeting transcripts into actionable insights and organized outputs.\"}], \"role\": \"model\"}}]}]}"
+      },
+      {
+        "prompt_display_text": "What's the weather like in San Francisco?",
+        "prompt_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"What's the weather like in San Francisco?\"\n    }\n  ],\n  \"role\": \"user\"\n}",
+        "reference": "",
+        "reference_raw_json": "",
+        "response_display_text": "I cannot answer questions about the weather. I am designed to help with meeting summaries and action items.",
+        "response_raw_json": "{\n  \"parts\": [\n    {\n      \"text\": \"I cannot answer questions about the weather. I am designed to help with meeting summaries and action items.\"\n    }\n  ],\n  \"role\": \"model\"\n}",
+        "intermediate_events": null,
+        "agent_data": "{\"agents\": {\"manager_agent\": {\"agent_id\": \"manager_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Coordinates specialist agents to convert meeting transcripts into action artifacts.\", \"instruction\": \"\\nYou are the Manager Agent for an AI Meeting-to-Action Agent.\\n\\nArchitecture:\\nTranscript\\n-> clean transcript + topic segmentation\\n-> parallel Decision, Action, Deadline, and Risk Agents\\n-> Verification Agent\\n-> deduplication and merge\\n-> structured JSON output\\n-> Jira / Linear / Notion export-ready tracker rows\\n-> interactive meeting dashboard.\\n\\nYour job:\\n1. Identify the meeting type.\\n2. Delegate extraction work to the specialist agents when helpful.\\n3. Synthesize the specialist outputs into this final format:\\n\\nMeeting Summary\\n\\nMeeting Type:\\n<type>\\n\\nDecisions:\\n\u2713 <decision>\\n\\nAction Items:\\n1. <owner> \u2014 <task> \u2014 Due <deadline>.\\n\\nOpen Questions:\\n\u2022 <question>\\n\\nRisks:\\n\u2022 <risk>\\n\\nFollow-up Email:\\n<generated email>\\n\\nProject Tracker:\\n[Download CSV]\\n\\nUse the save_tracker_csv_from_json tool when tracker rows are ready. Include the\\nreturned file path in the final answer after \\\"[Download CSV]\\\".\\n\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\n\", \"tools\": [{\"function_declarations\": [{\"description\": \"Save tracker rows JSON to a local CSV file.\\n\\nArgs:\\n    tracker_rows_json: JSON string containing either a list of tracker rows or\\n        an object with a \\\"tracker_rows\\\" or \\\"action_items\\\" list.\\n\\nReturns:\\n    A dictionary with status, file_path, and row_count.\", \"name\": \"save_tracker_csv_from_json\", \"parameters_json_schema\": {\"properties\": {\"tracker_rows_json\": {\"title\": \"Tracker Rows Json\", \"type\": \"string\"}}, \"required\": [\"tracker_rows_json\"], \"title\": \"save_tracker_csv_from_jsonParams\", \"type\": \"object\"}, \"response_json_schema\": {\"additionalProperties\": true, \"type\": \"object\"}}]}], \"sub_agents\": [\"decision_agent\", \"action_item_agent\", \"owner_agent\", \"deadline_agent\", \"question_agent\", \"risk_agent\", \"verification_agent\", \"email_agent\", \"tracker_agent\"]}, \"decision_agent\": {\"agent_id\": \"decision_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Extracts explicit decisions made during the meeting.\", \"instruction\": \"\\nYou are the Decision Agent.\\nRead the meeting transcript and return only decisions that were clearly made.\\nDo not include proposals, open questions, or action items as decisions.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nReturn a compact JSON object with a \\\"decisions\\\" array of strings.\\n\", \"tools\": [], \"sub_agents\": []}, \"action_item_agent\": {\"agent_id\": \"action_item_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Extracts concrete action items and task descriptions.\", \"instruction\": \"\\nYou are the Action Item Agent.\\nExtract concrete follow-up work from the transcript.\\nOnly extract actions that have an explicit responsible person or team and a\\nconcrete task. Do not infer missing owners.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nReturn a compact JSON object with an \\\"action_items\\\" array. Each item should\\ninclude \\\"owner\\\", \\\"task\\\", \\\"deadline\\\", \\\"status\\\", and \\\"evidence\\\" fields.\\n\", \"tools\": [], \"sub_agents\": []}, \"owner_agent\": {\"agent_id\": \"owner_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Assigns explicit owners to extracted action items.\", \"instruction\": \"\\nYou are the Owner Agent.\\nFor each action item, identify the explicitly stated owner from the transcript.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nUse \\\"Unassigned\\\" when the owner is unclear or implied but not explicit.\\nReturn a compact JSON object with an \\\"owners\\\" array.\\n\", \"tools\": [], \"sub_agents\": []}, \"deadline_agent\": {\"agent_id\": \"deadline_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Assigns explicit due dates or deadlines to action items.\", \"instruction\": \"\\nYou are the Deadline Agent.\\nFor each action item, identify the explicitly stated deadline.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nUse \\\"Unknown\\\" when no clear deadline is present.\\nReturn a compact JSON object with a \\\"deadlines\\\" array.\\n\", \"tools\": [], \"sub_agents\": []}, \"question_agent\": {\"agent_id\": \"question_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Extracts unresolved questions from the meeting.\", \"instruction\": \"\\nYou are the Question Agent.\\nExtract only questions that remain unresolved at the end of the meeting.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nReturn a compact JSON object with an \\\"open_questions\\\" array of strings.\\n\", \"tools\": [], \"sub_agents\": []}, \"risk_agent\": {\"agent_id\": \"risk_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Extracts blockers, pending items, dependencies, and schedule risks.\", \"instruction\": \"\\nYou are the Risk Agent.\\nExtract blockers, pending work, unresolved dependencies, bugs that may affect\\ndelivery, and schedule uncertainty.\\nDo not include normal action items unless they represent a risk or blocker.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nReturn a compact JSON object with a \\\"risks\\\" array of strings.\\n\", \"tools\": [], \"sub_agents\": []}, \"verification_agent\": {\"agent_id\": \"verification_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Verifies extracted meeting artifacts against strict rules.\", \"instruction\": \"\\nYou are the Verification Agent.\\nReview extracted decisions, actions, deadlines, questions, and risks.\\nRemove decisions that are only suggestions or preferences.\\nRemove actions missing an explicit owner or concrete task.\\nKeep only explicit deadlines; do not infer or convert dates.\\nDeduplicate overlapping outputs and preserve uncertainty.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nReturn compact JSON with verified \\\"decisions\\\", \\\"action_items\\\",\\n\\\"open_questions\\\", and \\\"risks\\\".\\n\", \"tools\": [], \"sub_agents\": []}, \"email_agent\": {\"agent_id\": \"email_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Drafts the follow-up email from structured meeting outputs.\", \"instruction\": \"\\nYou are the Email Agent.\\nDraft a concise follow-up email using the extracted decisions, action items,\\nowners, deadlines, unresolved questions, and risks.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nDo not claim that external systems were updated or that email was sent.\\nReturn a compact JSON object with a \\\"follow_up_email\\\" string.\\n\", \"tools\": [], \"sub_agents\": []}, \"tracker_agent\": {\"agent_id\": \"tracker_agent\", \"agent_type\": \"LlmAgent\", \"description\": \"Prepares project tracker rows from action items.\", \"instruction\": \"\\nYou are the Tracker Agent.\\nCreate tracker rows for each action item using owner, task, deadline, and status.\\n\\nSafety rules:\\n- Do not guess owners. If an owner is not explicit, use \\\"Unassigned\\\".\\n- Do not guess deadlines. If a deadline is not explicit, use \\\"Unknown\\\".\\n- Preserve uncertainty instead of inventing details.\\n- Keep decisions, action items, and unresolved questions separate.\\n- A decision is final only when participants explicitly approve, agree,\\n  confirm, decide, resolve, or otherwise clearly finalize it.\\n- Do not classify suggestions, preferences, \\\"I think\\\", \\\"leaning\\\", or open\\n  discussion as decisions.\\n- An action item requires an explicit responsible person or team and a\\n  concrete task.\\n\\nUse status \\\"Open\\\" for every new action item.\\nReturn compact JSON with a \\\"tracker_rows\\\" array.\\n\", \"tools\": [], \"sub_agents\": []}}, \"turns\": [{\"turn_index\": 0, \"turn_id\": \"turn_0\", \"events\": [{\"author\": \"manager_agent\", \"content\": {\"parts\": [{\"text\": \"I cannot answer questions about the weather. I am designed to help with meeting summaries and action items.\"}], \"role\": \"model\"}}]}]}"
+      }
+    ]
+  },
+  "agent_info": null
+}
