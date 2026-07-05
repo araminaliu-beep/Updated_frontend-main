@@ -8,9 +8,7 @@
 
 **Public Project Link:** https://github.com/araminaliu-beep/Meeting_AI_Agent
 
-**Video Link:** TODO: Add YouTube URL after recording
-
-**Cover Image:** TODO: Upload a dashboard screenshot to the Kaggle Media Gallery
+**Video Link:** https://youtu.be/PBAfDgKamhE
 
 ## Project Overview
 
