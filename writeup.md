@@ -22,7 +22,6 @@ The **AI Meeting-to-Action Agent** turns pasted transcripts, transcript files, a
 - Explicit deadlines
 - Open questions
 - Risks and blockers
-- Follow-up email text
 - Downloadable CSV and JSON artifacts
 - A project dashboard for reviewing the extracted work
 
