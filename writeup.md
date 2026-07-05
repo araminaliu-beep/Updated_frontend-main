@@ -27,6 +27,10 @@ The **AI Meeting-to-Action Agent** turns pasted transcripts, transcript files, a
 
 The current version is publicly hosted on Google Cloud Run. Users can open the deployed Next.js app, upload a meeting transcript or audio file, run analysis, and review the output without running anything locally.
 
+## Sample Test Files
+
+To make the project easy to evaluate, the GitHub repository includes a samples/ folder containing example meeting transcripts and audio recordings. Users who do not have their own meeting data can use these sample files to explore the application's features, including audio transcription, meeting analysis, structured extraction, dashboard visualization, and CSV/JSON export. The provided samples range from short transcripts to longer meeting recordings, allowing users to quickly test the complete end-to-end workflow without preparing their own input data.
+
 ## Motivation
 
 The goal was not just to summarize meetings. A generic summary can be readable but still fail to answer project execution questions:
